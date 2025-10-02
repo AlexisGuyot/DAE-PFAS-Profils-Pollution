@@ -54,7 +54,13 @@ MAP_MAX_POINTS = 12000
 # Mémoire/CPU
 USE_FLOAT32 = True
 
-st.set_page_config(page_title="PDH – Clustering & Carte", layout="wide")
+DEBUG = True  # set False after you’re stable
+
+try:
+    st.set_page_config(page_title="PDH – Clustering & Carte", layout="wide")
+except Exception as e:
+    st.error("Une erreur est survenue.")
+    st.exception(e)
 
 # -------------- Utils couleur ----------------
 PALETTE = [
@@ -76,16 +82,28 @@ def color_for_label(label):
 # -------------- Chargement & GDF --------------
 @st.cache_data(show_spinner=True)
 def load_pdh(nrows=None, use_cache=True):
+    # Prefer local cache if present
     if use_cache and os.path.exists(CSV_CACHE):
-        df = pd.read_csv(CSV_CACHE, engine="pyarrow")
-    else:
-        df = pd.read_csv(DATA_URL, engine="pyarrow")
+        try:
+            return pd.read_csv(CSV_CACHE, engine="pyarrow")
+        except Exception:
+            return pd.read_csv(CSV_CACHE)  # fallback to default engine
+
+    # Download
+    try:
+        try:
+            df = pd.read_csv(DATA_URL, engine="pyarrow")
+        except Exception:
+            df = pd.read_csv(DATA_URL)     # fallback if pyarrow missing/unavailable
         if use_cache:
             try:
                 df.to_csv(CSV_CACHE, index=False)
             except Exception:
                 pass
-    return df
+        return df
+    except Exception as e:
+        st.error(f"Échec chargement CSV: {e}")
+        raise
 
 def try_infer_geometry(df: pd.DataFrame) -> gpd.GeoDataFrame:
     cols = {c.lower(): c for c in df.columns}

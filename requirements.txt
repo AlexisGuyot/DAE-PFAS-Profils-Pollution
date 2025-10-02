@@ -1,14 +1,21 @@
-streamlit>=1.36
-pandas>=2.2
-numpy>=1.26
-pyarrow>=16
-geopandas>=0.14
-shapely>=2.0
-pyproj>=3.6
-folium>=0.16
-streamlit-folium>=0.18
-scikit-learn>=1.4
-matplotlib>=3.8
-orjson>=3.9
-shap>=0.45
-umap-learn>=0.5
+# core
+streamlit==1.37.1
+pandas==2.2.2
+numpy==1.26.4         # safe pin for manylinux wheels used by Geo stack
+pyarrow==16.1.0
+
+# geo stack (wheels available; no GDAL needed here)
+geopandas==0.14.4
+shapely==2.0.4
+pyproj==3.6.1
+
+# maps
+folium==0.16.0
+streamlit-folium==0.18.0
+
+# ML
+scikit-learn==1.4.2
+matplotlib==3.8.4
+orjson==3.9.15
+shap==0.45.1
+umap-learn==0.5.6
